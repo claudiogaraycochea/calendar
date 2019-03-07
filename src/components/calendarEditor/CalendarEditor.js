@@ -7,11 +7,11 @@ class CalendarEditor extends Component {
   	super(props);
   	this.state = {
       schedule: [{
-          date: '02/10/2019',
+          date: '3/10/2019',
           users: [1,2],
         },
         {
-          date: '02/15/2019',
+          date: '3/15/2019',
           users: [1],
         },
       ],
@@ -26,7 +26,8 @@ class CalendarEditor extends Component {
           lastName: 'Gary',
         }
       ],
-      dateSelected: {}
+      dateSelected: {},
+      usersSchedule: [],
     }
   }
 
@@ -42,8 +43,6 @@ class CalendarEditor extends Component {
     let counterDay = 0;
     let valueDay = dateSelected.prevMonthData.startDay;
     let monthIndex = 'previous_month';
-
-    console.log('dateSelected:',dateSelected);
     for (let i = 0; i < 6; i++) {
 			let children = []
 			for (let j = 0; j < 7; j++) {
@@ -63,13 +62,19 @@ class CalendarEditor extends Component {
         }
 
         if(itemDraggable) {
+          const data = {
+            i,
+            j,
+            valueDay
+          }
           children.push(
             <td key={j}
               onDragOver={(e)=>this.onDragOver(e)}
-              onDrop={(e)=>{this.onDrop(e, i, j)}}
+              onDrop={(e)=>{this.onDrop(e, data)}}
             >
               <div className="item item-draggable">
                 <div className="value-day">{valueDay}</div>
+                <div className="users-wrapper">{this.getScheduleUsers(valueDay)}</div>
               </div>
             </td>
           )
@@ -89,7 +94,7 @@ class CalendarEditor extends Component {
 		return table;
   }
   
-  buildCalendar = (date) => {
+  buildCalendar = () => {
     return(
 			<table className="calendar-wrapper">
         <thead>
@@ -110,7 +115,6 @@ class CalendarEditor extends Component {
 		)
   }
 
-  /* When start to Drag set a Block name as ID */
 	onDragStart = (ev, userId) => {
 		ev.dataTransfer.setData("userId", userId);
 	}
@@ -119,33 +123,67 @@ class CalendarEditor extends Component {
 		ev.preventDefault();
 	}
 
-	/* When is Drop insert the Block */
-	onDrop = (ev, i, j) => {
-    let userId = ev.dataTransfer.getData("userId");
-    console.log('Insert userId ',userId,' to ',i,'/',j);
-	}
+	onDrop = (ev, data) => {
+    const userId = parseInt(ev.dataTransfer.getData('userId'));
+    const date = this.state.dateSelected.month+'/'+data.valueDay+'/'+this.state.dateSelected.year;
+    let schedule = this.state.schedule;
+    let scheduleItem = schedule.filter(item => item.date === date );
+    if(scheduleItem.length>0){
+      scheduleItem[0].users = scheduleItem[0].users.concat(userId);
+    }
+    else{
+      const newScheduleItem = {
+        date,
+        users: [userId],
+      }
+      schedule.push(newScheduleItem);
+    }
+    this.setState({
+      schedule,
+    });
+  }
+  
+  getUserData = (userId) => {
+    const users = this.state.users;
+    const user = users.filter(item => item.id === userId );
+    return user[0];
+  }
+
+  getScheduleUsers = (valueDay) => {
+    const date = this.state.dateSelected.month+'/'+valueDay+'/'+this.state.dateSelected.year;
+    const schedule = this.state.schedule;
+    const scheduleItem = schedule.filter(item => item.date === date );
+    if(scheduleItem.length>0){
+      const users = scheduleItem[0].users;
+      let usersView = [];
+      for(let i = 0; i < users.length; i++){
+        const user = this.getUserData(users[i]);
+        if(user!==undefined) {
+          usersView.push(<div key={i}>{user.firstName} {user.lastName}</div>);
+        }
+      }
+      return usersView;
+    }
+  }
 
 	render() {
-    console.log(this.state.dateSelected);
 		return (
-			<div>
-				CalendarEditor
-        <div>
-          {this.buildCalendar('02/28/2019')}
+      <div className="container">
+        <div className="content">
+          {this.buildCalendar()}
         </div>
-        <div>
+        <div className="aside">
           {this.state.users.map((item) => {
-            return (<div key={item.id}
-              onDragStart = {(e) => this.onDragStart(e, item.id)}
-              draggable
-              >
-              {item.firstName} {item.lastName}
-            </div>)          
-          }
-
-          )}
+            return (
+              <div key={item.id}
+                onDragStart = {(e) => this.onDragStart(e, item.id)}
+                draggable
+                className="user-item">
+                {item.firstName} {item.lastName}
+              </div>)          
+          })}
         </div>
-			</div>
+      </div>
 		);
 	}
 }

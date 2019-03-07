@@ -11,7 +11,9 @@ class Main extends Component {
 	render() {
 		return (
 			<div>
-				<h2>Calendar</h2>
+        <header>
+          CalendarEditor
+        </header>
 				<CalendarEditor />
 			</div>
 		);
