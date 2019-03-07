@@ -2,8 +2,29 @@
   border: 1px solid red;
 }
 
-.calendar-wrapper td {
-  border: 2px solid blue;
+.calendar-wrapper .item{
+  border: 2px solid orange;
   width: 100px;
-  height: 50px;
+  height: 40px;
+  padding: 10px;  
+}
+
+.calendar-wrapper td {
+  position: relative;
+}
+
+.calendar-wrapper .value-day {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.calendar-wrapper .item.item-draggable {
+  border: 2px solid orange;
+  color: #222222;
+}
+
+.calendar-wrapper .item.item-disabled {
+  border: 2px solid #cccccc;
+  color: #cccccc;
 }

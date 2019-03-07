@@ -7,13 +7,24 @@ export const dataMonth = {
     const today = new Date();
     const day = today.getDate();
     const month = today.getMonth()+1;
+    const previousMonth = today.getMonth();
     const year = today.getFullYear();
+    const dayPosition = new Date(year, today.getMonth(), 1).getDay(); // day position to start the actual month
+    const monthDataEndDay = new Date(year, month, 0).getDate(); // calculate total month days.
+    const prevMonthDataEndDay = new Date(year, previousMonth, 0).getDate();
+    const prevMonthDataStartDay = (prevMonthDataEndDay - dayPosition);
     const dateObject = {
       day,
       month,
       year,
-      days: new Date(year, month, 0).getDate(),
-      dayNumber: new Date(year, today.getMonth(), 1).getDay(),
+      monthData: {
+        dayPosition,
+        endDay: monthDataEndDay,
+      },
+      prevMonthData: {
+        startDay: prevMonthDataStartDay,
+        endDay: prevMonthDataEndDay,
+      }
     }
     return dateObject;
   },
