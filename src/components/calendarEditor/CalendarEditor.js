@@ -66,7 +66,7 @@ class CalendarEditor extends Component {
           children.push(
             <td key={j}
               onDragOver={(e)=>this.onDragOver(e)}
-              onDrop={(e)=>{this.onDrop(e, i)}}
+              onDrop={(e)=>{this.onDrop(e, i, j)}}
             >
               <div className="item item-draggable">
                 <div className="value-day">{valueDay}</div>
@@ -110,6 +110,21 @@ class CalendarEditor extends Component {
 		)
   }
 
+  /* When start to Drag set a Block name as ID */
+	onDragStart = (ev, userId) => {
+		ev.dataTransfer.setData("userId", userId);
+	}
+
+	onDragOver = (ev) => {
+		ev.preventDefault();
+	}
+
+	/* When is Drop insert the Block */
+	onDrop = (ev, i, j) => {
+    let userId = ev.dataTransfer.getData("userId");
+    console.log('Insert userId ',userId,' to ',i,'/',j);
+	}
+
 	render() {
     console.log(this.state.dateSelected);
 		return (
@@ -117,6 +132,18 @@ class CalendarEditor extends Component {
 				CalendarEditor
         <div>
           {this.buildCalendar('02/28/2019')}
+        </div>
+        <div>
+          {this.state.users.map((item) => {
+            return (<div key={item.id}
+              onDragStart = {(e) => this.onDragStart(e, item.id)}
+              draggable
+              >
+              {item.firstName} {item.lastName}
+            </div>)          
+          }
+
+          )}
         </div>
 			</div>
 		);
