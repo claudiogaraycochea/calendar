@@ -7,6 +7,7 @@ export const dataMonth = {
     const today = new Date();
     const day = today.getDate();
     const month = today.getMonth()+1;
+    const previousMonth = today.getMonth();
     const year = today.getFullYear();
     const dateObject = {
       day,
@@ -14,6 +15,7 @@ export const dataMonth = {
       year,
       days: new Date(year, month, 0).getDate(),
       dayNumber: new Date(year, today.getMonth(), 1).getDay(),
+      previousDays: new Date(year, previousMonth, 0).getDate(),
     }
     return dateObject;
   },

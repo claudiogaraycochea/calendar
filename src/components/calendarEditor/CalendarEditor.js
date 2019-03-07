@@ -49,8 +49,11 @@ class CalendarEditor extends Component {
   buildCalendarContent = () => {
 		let table = []
     let counterDay = 0;
+    let counterDayNumber = 0;
     let dayName = '';
     let dayRestart = this.state.dateSelected.dayNumber;
+    let monthActual = false;
+    let itemDraggable = false;
 		for (let i = 0; i < 6; i++) {
 			let children = []
 			for (let j = 0; j < 7; j++) {
@@ -59,15 +62,37 @@ class CalendarEditor extends Component {
         if(counterDay>dayRestart) {
           counterDay = 1;
           dayRestart = this.state.dateSelected.days;
+          monthActual = true;
+          itemDraggable = true;
         }
-        children.push(
-          <td key={j}
-            onDragOver={(e)=>this.onDragOver(e)}
-            onDrop={(e)=>{this.onDrop(e, i)}}
-          >
-            <div className="item-draggable">{dayName} {counterDay}</div> 
-          </td>
-        )
+        if(counterDay===this.state.dateSelected.days){
+          itemDraggable=false;
+        }
+        if((monthActual===false)&&(itemDraggable===false)) {
+          console.log(this.state.dateSelected.previousDays-(7-counterDay));
+          counterDayNumber = this.state.dateSelected.previousDays-(5-counterDay);
+        }
+        else {
+          counterDayNumber = counterDay;
+        }
+
+        if(itemDraggable) {
+          children.push(
+            <td key={j}
+              onDragOver={(e)=>this.onDragOver(e)}
+              onDrop={(e)=>{this.onDrop(e, i)}}
+            >
+              <div className="item-draggable">{dayName} {counterDayNumber}</div> 
+            </td>
+          )
+        }
+        else {
+          children.push(
+            <td key={j}>
+              <div className="item-disabled">{dayName} {counterDayNumber}</div> 
+            </td>
+          )
+        }
       }
       
 			table.push(<tr key={i}>{children}</tr>)
